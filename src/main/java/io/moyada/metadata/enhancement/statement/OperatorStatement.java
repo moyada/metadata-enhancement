@@ -12,11 +12,11 @@ import java.util.List;
  **/
 public class OperatorStatement extends AssginStatement implements Assign, Statement {
 
-    private IdentStatement self;
+    private Value self;
 
     private List<String> opts;
 
-    public OperatorStatement(IdentStatement self, Operator operator, Value value) {
+    public OperatorStatement(Value self, Operator operator, Value value) {
         Assert.checkNotNull(self, "self");
         this.self = self;
         this.opts = new ArrayList<>();
@@ -33,19 +33,10 @@ public class OperatorStatement extends AssginStatement implements Assign, Statem
     @Override
     protected String getInvoke() {
         StringBuilder content = new StringBuilder();
-        content.append(self.getContent());
+        content.append(self.getStatement());
         for (String opt : opts) {
             content.append(opt);
         }
-        content.append(";");
         return content.toString();
-    }
-
-    public static void main(String[] args) {
-        Statement statement = new OperatorStatement(IdentStatement.of("index"), Operator.PLUS, Value.of(12))
-                .operate(Operator.TIMES, Value.of(21))
-                .assign(new VariableStatement(int.class, "name"));
-
-        System.out.println(statement.getContent());
     }
 }

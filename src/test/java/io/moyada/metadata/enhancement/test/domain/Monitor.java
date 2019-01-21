@@ -1,4 +1,4 @@
-package io.moyada.metadata.enhancement.test;
+package io.moyada.metadata.enhancement.test.domain;
 
 /**
  * @author xueyikang
@@ -7,6 +7,6 @@ package io.moyada.metadata.enhancement.test;
 public class Monitor {
 
     public void listener(Invocation invocation) {
-        System.out.println(invocation.record());
+        System.out.println(invocation.getData());
     }
 }

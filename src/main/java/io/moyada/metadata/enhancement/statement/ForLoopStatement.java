@@ -1,6 +1,5 @@
 package io.moyada.metadata.enhancement.statement;
 
-import io.moyada.metadata.enhancement.support.Value;
 import io.moyada.metadata.enhancement.support.Assert;
 
 /**
@@ -35,21 +34,7 @@ public class ForLoopStatement implements Statement {
             content.append(step.getApply()).deleteCharAt(content.length() - 1);
         }
         content.append(") {\n");
-        content.append(body.getContent()).append("\n}");
+        content.append(body.getContent()).append("\n}\n");
         return content.toString();
-    }
-
-    public static void main(String[] args) {
-        ForLoopStatement statement = new ForLoopStatement(
-                new VariableStatement(int.class, "id", Value.of(1)),
-                new ConditionStatement(ConditionType.LT, IdentStatement.of("id"), IdentStatement.of("50")),
-                new OperatorStatement(IdentStatement.of("id"), Operator.PLUS, Value.of(12)).assign(IdentStatement.of("id")),
-                BodyStatement.init()
-                        .addStatement(new VariableStatement(String.class, "name", Value.of("success")))
-                        .addStatement(InvokeStatement.of(IdentStatement.of("name"), "toString"))
-                        .addStatement(InvokeStatement.of(IdentStatement.of("System.out"), "println", Value.of(IdentStatement.of("name"))))
-        );
-
-        System.out.println(statement.getContent());
     }
 }

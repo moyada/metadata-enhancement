@@ -17,35 +17,35 @@ public class Value {
     }
 
     public static Value of(byte value) {
-        return new Value(String.valueOf(value));
+        return new Value(Byte.toString(value));
     }
 
     public static Value of(short value) {
-        return new Value("\'" + String.valueOf(value) + "\'");
+        return new Value(Short.toString(value));
     }
 
     public static Value of(int value) {
-        return new Value(String.valueOf(value));
+        return new Value(Integer.toString(value));
     }
 
     public static Value of(long value) {
-        return new Value(String.valueOf(value));
+        return new Value(value + "L");
     }
 
     public static Value of(float value) {
-        return new Value(String.valueOf(value));
+        return new Value(value + "F");
     }
 
     public static Value of(double value) {
-        return new Value(String.valueOf(value));
+        return new Value(value + "D");
     }
 
     public static Value of(boolean value) {
-        return new Value(String.valueOf(value));
+        return new Value(Boolean.toString(value));
     }
 
     public static Value of(char value) {
-        return new Value(String.valueOf(value));
+        return new Value("\'" + value + "\'");
     }
 
     public static Value of(String value) {
@@ -53,7 +53,7 @@ public class Value {
     }
 
     public static Value of(IdentStatement ident) {
-        return new Value(ident.getContent());
+        return new Value(ident.getIdentify());
     }
 
     public static Value of(Class<?> type) {

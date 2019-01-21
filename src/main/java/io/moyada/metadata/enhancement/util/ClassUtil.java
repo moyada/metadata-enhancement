@@ -12,6 +12,21 @@ import java.net.URL;
  **/
 public class ClassUtil {
 
+    private static final boolean isPrint;
+
+    static {
+        String property = System.getProperty("print.result");
+        if (property == null) {
+            isPrint = false;
+        } else {
+            isPrint = Boolean.TRUE.toString().equalsIgnoreCase(property);
+        }
+    }
+
+    public static boolean isPrint() {
+        return isPrint;
+    }
+
     public static void writeFile(CtClass ctClass) {
         URL url = ClassLoader.getSystemResource("");
         String path = url.getPath();

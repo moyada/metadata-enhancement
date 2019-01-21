@@ -1,4 +1,4 @@
-package io.moyada.metadata.enhancement.proxy;
+package io.moyada.metadata.enhancement;
 
 import io.moyada.metadata.enhancement.util.NameUtil;
 import javassist.*;
@@ -9,9 +9,9 @@ import javassist.bytecode.AttributeInfo;
  * @author xueyikang
  * @since 0.0.1
  **/
-public class JavassistExtendProxy<T> extends JavassistProxy<T> {
+class JavassistExtendEnhance<T> extends JavassistEnhance<T> {
 
-    public JavassistExtendProxy(Class<T> target) {
+    JavassistExtendEnhance(Class<T> target) {
         super(target);
     }
 

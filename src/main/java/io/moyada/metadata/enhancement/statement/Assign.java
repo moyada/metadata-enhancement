@@ -11,4 +11,6 @@ public interface Assign {
     AssginStatement assign(VariableStatement ident);
 
     String getApply();
+
+    IdentStatement toIdent();
 }

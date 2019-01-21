@@ -19,14 +19,8 @@ public class WhileStatement implements Statement {
 
     @Override
     public String getContent() {
-        StringBuilder content = new StringBuilder("while (");
-        content.append(condition.getContent()).append(") ");
-        content.append("{\n").append(body.getContent()).append("}");
+        StringBuilder content = new StringBuilder("while (").append(condition.getContent()).append(") ");
+        content.append("{\n").append(body.getContent()).append("\n}\n");
         return content.toString();
-    }
-
-    public static void main(String[] args) {
-        Statement statement = new WhileStatement(new ConditionStatement(ConditionType.LE, IdentStatement.of(1), IdentStatement.of("size")), null);
-        System.out.println(statement.getContent());
     }
 }

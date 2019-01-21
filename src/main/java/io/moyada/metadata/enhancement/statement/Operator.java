@@ -13,6 +13,8 @@ public enum Operator {
     TIMES(" * "),
 
     DIVIDE(" / "),
+
+    EQUALS(" = "),
     ;
 
     private String opt;

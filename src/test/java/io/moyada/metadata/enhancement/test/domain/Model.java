@@ -1,4 +1,4 @@
-package io.moyada.metadata.enhancement.test;
+package io.moyada.metadata.enhancement.test.domain;
 
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;

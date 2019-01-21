@@ -33,15 +33,6 @@ public class InvokeStatement extends AssginStatement implements Statement {
         return this;
     }
 
-    public IdentStatement toIdent() {
-        StringBuilder content = new StringBuilder();
-        content.append(self.getContent());
-        for (String invoke : invokes) {
-            content.append('.').append(invoke);
-        }
-        return IdentStatement.of(content.toString());
-    }
-
     private String buildApply(String method, Value[] params) {
         if (null == params) {
             return method + "()";
@@ -54,27 +45,19 @@ public class InvokeStatement extends AssginStatement implements Statement {
         StringBuilder invoke = new StringBuilder(method);
         invoke.append("(");
         for (Value param : params) {
-            invoke.append(param.getStatement());
+            invoke.append(param.getStatement()).append(",");
         }
-        invoke.append(")");
+        invoke.deleteCharAt(invoke.length() - 1).append(")");
         return invoke.toString();
     }
 
     @Override
     protected String getInvoke() {
         StringBuilder content = new StringBuilder();
-        content.append(self.getContent());
+        content.append(self.getIdentify());
         for (String invoke : invokes) {
             content.append('.').append(invoke);
         }
-        content.append(";");
         return content.toString();
-    }
-
-    public static void main(String[] args) {
-        Statement statement = of(IdentStatement.of(1), "apply", Value.of(IdentStatement.of("name")))
-                .of("toString", Value.of("haha"));
-
-        System.out.println(statement.getContent());
     }
 }

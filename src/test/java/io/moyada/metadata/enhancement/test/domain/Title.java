@@ -1,4 +1,4 @@
-package io.moyada.metadata.enhancement.test;
+package io.moyada.metadata.enhancement.test.domain;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,19 +9,9 @@ import java.lang.annotation.Target;
  * @author xueyikang
  * @since 1.0
  **/
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Data {
+public @interface Title {
 
     String value();
-
-    int iv();
-
-    char cv();
-
-    float fv();
-
-    Class clazz();
-
-    int[] array();
 }

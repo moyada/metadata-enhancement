@@ -24,16 +24,11 @@ public class VariableStatement extends IdentStatement implements Statement {
 
     @Override
     public String getContent() {
-        StringBuilder content = new StringBuilder(type.getSimpleName()).append(" ").append(identify);
+        StringBuilder content = new StringBuilder(type.getSimpleName()).append(" ").append(getIdentify());
         if (null != init) {
             content.append(" = ").append(init.getStatement());
         }
         content.append(";");
         return content.toString();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new VariableStatement(String.class, "test").getContent());
-        System.out.println(new VariableStatement(String.class, "test", Value.of("name")).getContent());
     }
 }

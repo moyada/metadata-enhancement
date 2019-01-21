@@ -6,7 +6,7 @@ package io.moyada.metadata.enhancement.statement;
  **/
 public class IdentStatement implements Statement {
 
-    String identify;
+    private final String identify;
 
     public IdentStatement(String name) {
         identify = name;
@@ -22,6 +22,10 @@ public class IdentStatement implements Statement {
 
     @Override
     public String getContent() {
+        return identify;
+    }
+
+    public String getIdentify() {
         return identify;
     }
 }

@@ -1,7 +1,6 @@
-package io.moyada.metadata.enhancement.proxy;
+package io.moyada.metadata.enhancement;
 
-import io.moyada.metadata.enhancement.Proxy;
-import io.moyada.metadata.enhancement.exception.ProxyException;
+import io.moyada.metadata.enhancement.exception.EnhanceException;
 import io.moyada.metadata.enhancement.statement.BodyStatement;
 import io.moyada.metadata.enhancement.statement.EmptyStatement;
 import io.moyada.metadata.enhancement.support.Annotation;
@@ -21,26 +20,23 @@ import java.util.*;
  * @author xueyikang
  * @since 0.0.1
  **/
-public abstract class JavassistProxy<T> implements Proxy<T> {
+public abstract class JavassistEnhance<T> implements Enhance<T> {
 
     private static final CtClass[] EMPTY_PARAM = new CtClass[0];
-
-    private Class<?> clazz;
 
     CtClass originClass;
     CtClass targetClass;
 
-    private Set<String> importPackage;
+    private final Set<String> importPackage;
 
-    public JavassistProxy(Class<T> targetClass) {
-        this.clazz = targetClass;
+    JavassistEnhance(Class<T> targetClass) {
         try {
             this.originClass = getOrigin(targetClass);
             this.targetClass = buildTarget(targetClass);
         } catch (NotFoundException e) {
-            throw new ProxyException(clazz.getName() + " not found.", e);
+            throw new EnhanceException(targetClass.getName() + " not found.", e);
         } catch (CannotCompileException e) {
-            throw new ProxyException("can not fetch target class: " + clazz.getName(), e);
+            throw new EnhanceException("Can not fetch target class: " + originClass.getName(), e);
         }
 
         this.importPackage = new HashSet<>();
@@ -55,48 +51,37 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
         }
     }
 
-    private CtClass getOrigin(Class<T> target) throws NotFoundException, CannotCompileException {
+    private CtClass getOrigin(Class<T> target) throws NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
         return classPool.getCtClass(target.getName());
     }
 
     abstract CtClass buildTarget(Class<T> target) throws NotFoundException, CannotCompileException;
 
-    protected boolean isVoid(CtMethod method) {
-        String returnType;
-        try {
-            returnType = method.getReturnType().getSimpleName();
-        } catch (NotFoundException e) {
-            return true;
-        }
-
-        return returnType.equalsIgnoreCase("void");
-    }
-
     @Override
-    public Proxy<T> addImport(String name) {
+    public Enhance<T> addImport(String name) {
         Assert.checkNotNull(name, "class name");
         addPackage(name);
         return this;
     }
 
     @Override
-    public Proxy<T> addField(String name, Class<?> type, int modifier) {
+    public Enhance<T> addField(String name, Class<?> type, int modifier) {
         return addField(name, type, modifier, new Annotation[0]);
     }
 
     @Override
-    public Proxy<T> addField(String name, Class<?> type, int modifier, Value init) {
+    public Enhance<T> addField(String name, Class<?> type, int modifier, Value init) {
         return addField(name, type, modifier, init, new Annotation[0]);
     }
 
     @Override
-    public Proxy<T> addField(String name, Class<?> type, int modifier, Annotation... annotations) {
+    public Enhance<T> addField(String name, Class<?> type, int modifier, Annotation... annotations) {
         return addField(name, type, modifier, null, annotations);
     }
 
     @Override
-    public Proxy<T> addField(String name, Class<?> type, int modifier, Value init, Annotation... annotations) {
+    public Enhance<T> addField(String name, Class<?> type, int modifier, Value init, Annotation... annotations) {
         NameUtil.check(name);
         Assert.checkNotNull(type, "type");
 
@@ -140,7 +125,7 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
         try {
             return ClassPool.getDefault().getCtClass(className);
         } catch (NotFoundException e) {
-            throw new ProxyException(e);
+            throw new EnhanceException(e);
         }
     }
 
@@ -177,7 +162,7 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
         try {
             ctField = CtField.make(statement, targetClass);
         } catch (CannotCompileException e) {
-            throw new ProxyException(e);
+            throw new EnhanceException(e);
         }
 
         ctField.setModifiers(modifier);
@@ -188,8 +173,8 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
     }
 
     @Override
-    public Proxy<T> addMethod(String name, List<Class<?>> paramType, Class<?> returnType, List<Class<? extends Throwable>> exception,
-                              int modifier, BodyStatement body, Annotation... annotations) {
+    public Enhance<T> addMethod(String name, List<Class<?>> paramType, Class<?> returnType, List<Class<? extends Throwable>> exception,
+                                int modifier, BodyStatement body, Annotation... annotations) {
         NameUtil.check(name);
         if (null == returnType) {
             returnType = void.class;
@@ -209,7 +194,8 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
             exceClass = toClass(exceptions);
         }
 
-        String content = "{\n" + body.getContent() + "\n}";
+        String content = "{" + body.getContent() + "}";
+
         try {
             CtMethod method = CtNewMethod.make(modifier, returnClass, name, paramClass, exceClass, content, targetClass);
             addAnnotation(method, annotations);
@@ -246,13 +232,13 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
     }
 
     @Override
-    public Proxy<T> addAnnotationToClass(Annotation... annotations) {
+    public Enhance<T> addAnnotationToClass(Annotation... annotations) {
         addAnnotation(targetClass, annotations);
         return this;
     }
 
     @Override
-    public Proxy<T> addAnnotationToMethod(String name, List<Class<?>> paramType, Annotation... annotations) {
+    public Enhance<T> addAnnotationToMethod(String name, List<Class<?>> paramType, Annotation... annotations) {
         CtMethod method = getMethod(name, paramType);
         addAnnotation(method, annotations);
         return this;
@@ -272,12 +258,12 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
             try {
                 method = originClass.getDeclaredMethod(name, paramClass);
                 if (java.lang.reflect.Modifier.isStatic(method.getModifiers())) {
-                    throw new ProxyException("Can not add annotation to static method [" + name + "] of super class " + clazz.getName());
+                    throw new EnhanceException("Can not add annotation to static method [" + name + "] of super class " + originClass.getName());
                 }
                 method = superMethod(method, targetClass);
                 targetClass.addMethod(method);
             } catch (NotFoundException | CannotCompileException e2) {
-                throw new ProxyException("Can not found method [" + name + "] in " + clazz.getName(), e2);
+                throw new EnhanceException("Can not found method [" + name + "] in " + originClass.getName(), e2);
             }
         }
         return method;
@@ -301,7 +287,7 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
     }
 
     @Override
-    public Proxy<T> addAnnotationToField(String name, Annotation... annotations) {
+    public Enhance<T> addAnnotationToField(String name, Annotation... annotations) {
         CtField field;
         try {
             field = targetClass.getDeclaredField(name);
@@ -369,7 +355,7 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
     }
 
     @Override
-    public Proxy<T> beforeMethod(String name, List<Class<?>> paramType, BodyStatement statements) {
+    public Enhance<T> beforeMethod(String name, List<Class<?>> paramType, BodyStatement statements) {
         if (null == statements) {
             return this;
         }
@@ -382,13 +368,18 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
         try {
             method.insertBefore(content);
         } catch (CannotCompileException e) {
-            throw new ProxyException(e);
+            throw new EnhanceException(e);
         }
         return this;
     }
 
     @Override
-    public Proxy<T> afterMethod(String name, List<Class<?>> paramType, BodyStatement statements) {
+    public Enhance<T> afterMethod(String name, List<Class<?>> paramType, BodyStatement statements) {
+        return afterMethod(name, paramType, statements, false);
+    }
+
+    @Override
+    public Enhance<T> afterMethod(String name, List<Class<?>> paramType, BodyStatement statements, boolean asFinally) {
         if (null == statements) {
             return this;
         }
@@ -399,21 +390,41 @@ public abstract class JavassistProxy<T> implements Proxy<T> {
 
         CtMethod method = getMethod(name, paramType);
         try {
-            method.insertAfter(content, true);
+            method.insertAfter(content, asFinally);
         } catch (CannotCompileException e) {
-            throw new ProxyException(e);
+            throw new EnhanceException(e);
         }
         return this;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Class<T> create() {
-//        ClassUtil.writeFile(targetClass);
-        try {
-            return (Class<T>) targetClass.toClass();
-        } catch (CannotCompileException e) {
-            throw new ProxyException("create proxy error from " + clazz.getName(), e);
+        return create(null);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<T> create(String name) {
+        if (null == name) {
+            targetClass.setName(NameUtil.getProxyName(originClass.getName()));
+        } else {
+            targetClass.setName(name);
         }
+
+        if (originClass.getName().equals(targetClass.getName())) {
+            throw new EnhanceException("duplicate definition class name");
+        }
+
+        Class<T> newClass;
+        try {
+            newClass = (Class<T>) targetClass.toClass();
+        } catch (CannotCompileException e) {
+            throw new EnhanceException("create proxy error from " + originClass.getName(), e);
+        }
+
+        if (ClassUtil.isPrint()) {
+            ClassUtil.writeFile(targetClass);
+        }
+        return newClass;
     }
 }

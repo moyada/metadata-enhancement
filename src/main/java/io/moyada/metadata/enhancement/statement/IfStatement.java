@@ -48,22 +48,13 @@ public class IfStatement implements Statement {
         content.append("{\n").append(ifBody.getContent()).append("\n}");
         if (null != elseIf) {
             for (IfStatement statement : elseIf) {
-                content.append(" else ").append(statement.getContent());
+                content.append(" else ").append(statement.getContent()).deleteCharAt(content.length() - 1);
             }
         }
         if (null != elseBody) {
-            content.append(" else {\n").append(elseBody.getContent()).append("}");
+            content.append(" else {\n").append(elseBody.getContent()).append("\n}");
         }
         content.append("\n");
         return content.toString();
-    }
-
-    public static void main(String[] args) {
-        Statement statement = IfStatement.If(new ConditionStatement(ConditionType.LE, IdentStatement.of(1), IdentStatement.of("12")), null)
-                .ElseIf(new ConditionStatement(ConditionType.GT, IdentStatement.of(1), IdentStatement.of("size")), null)
-                .ElseIf(new ConditionStatement(ConditionType.EQ, IdentStatement.of(1), IdentStatement.of("size")), null)
-                .Else(null);
-
-        System.out.println(statement.getContent());
     }
 }
