@@ -13,7 +13,6 @@ import org.junit.jupiter.api.function.Executable;
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
 
 /**
  * @author xueyikang
@@ -36,7 +35,7 @@ public class ProxyTest {
                 .addImport(Invocation.class.getName())
                 .addAnnotationToClass(Annotation.of(Resource.class))
                 .addField(fileName, Monitor.class, Modifier.PRIVATE, Annotation.of(Resource.class))
-                .beforeMethod("apply", Collections.<Class<?>>singletonList(String.class),
+                .beforeMethod("apply", new Class<?>[]{String.class},
                         BodyStatement.init()
                                 .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(fileName), IdentStatement.of("null")),
                                         BodyStatement.init()

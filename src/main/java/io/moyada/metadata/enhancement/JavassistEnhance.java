@@ -98,11 +98,11 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
         return this;
     }
 
-    private CtClass[] toClass(List<Class<?>> classes) {
+    private CtClass[] toClass(Class<?>[] classes) {
         if (null == classes) {
             return new CtClass[0];
         }
-        int size = classes.size();
+        int size = classes.length;
         if (size == 0) {
             return new CtClass[0];
         }
@@ -173,7 +173,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
     }
 
     @Override
-    public Enhance<T> addMethod(String name, List<Class<?>> paramType, Class<?> returnType, List<Class<? extends Throwable>> exception,
+    public Enhance<T> addMethod(String name, Class<?>[] paramType, Class<?> returnType, Class<? extends Throwable>[] exception,
                                 int modifier, BodyStatement body, Annotation... annotations) {
         NameUtil.check(name);
         if (null == returnType) {
@@ -189,9 +189,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
         if (null == exception) {
             exceClass = new CtClass[0];
         } else {
-            List<Class<?>> exceptions = new ArrayList<>();
-            exceptions.addAll(exception);
-            exceClass = toClass(exceptions);
+            exceClass = toClass(exception);
         }
 
         String content = "{" + body.getContent() + "}";
@@ -238,49 +236,67 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
     }
 
     @Override
-    public Enhance<T> addAnnotationToMethod(String name, List<Class<?>> paramType, Annotation... annotations) {
+    public Enhance<T> addAnnotationToMethod(String name, Class<?>[] paramType, Annotation... annotations) {
         CtMethod method = getMethod(name, paramType);
         addAnnotation(method, annotations);
         return this;
     }
 
-    private CtMethod getMethod(String name, List<Class<?>> paramType) {
+    private CtMethod getMethod(String name, Class<?>[] paramType) {
         NameUtil.check(name);
         CtClass[] paramClass = toParam(paramType);
         return getMethod(name, paramClass);
     }
 
     private CtMethod getMethod(String name, CtClass[] paramClass) {
-        CtMethod method;
-        try {
-            method = targetClass.getDeclaredMethod(name, paramClass);
-        } catch (NotFoundException e) {
+        CtMethod method = null;
+
+        CtClass currentClass = this.targetClass;
+
+        do {
             try {
-                method = originClass.getDeclaredMethod(name, paramClass);
-                if (java.lang.reflect.Modifier.isStatic(method.getModifiers())) {
-                    throw new EnhanceException("Can not add annotation to static method [" + name + "] of super class " + originClass.getName());
+                method = currentClass.getDeclaredMethod(name, paramClass);
+            } catch (NotFoundException e) {
+                try {
+                    currentClass = currentClass.getSuperclass();
+                } catch (NotFoundException e2) {
+                    throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName(), e2);
                 }
-                method = superMethod(method, targetClass);
-                targetClass.addMethod(method);
-            } catch (NotFoundException | CannotCompileException e2) {
-                throw new EnhanceException("Can not found method [" + name + "] in " + originClass.getName(), e2);
+                if ("java.lang.Object".equals(currentClass.getName())) {
+                    throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName());
+                }
             }
+        } while (method == null);
+
+        int modifiers = method.getModifiers();
+        if (java.lang.reflect.Modifier.isStatic(modifiers)) {
+            throw new EnhanceException("Can not enhance static method [" + name + "] of super class " + currentClass.getName());
+        }
+        if (java.lang.reflect.Modifier.isPrivate(modifiers)) {
+            throw new EnhanceException("Can not enhance private method [" + name + "] of super class " + currentClass.getName());
+        }
+
+        try {
+            method = superMethod(method, this.targetClass);
+            this.targetClass.addMethod(method);
+        } catch (CannotCompileException | NotFoundException e) {
+            throw new EnhanceException("Enhance method [" + name + "] error.", e);
         }
         return method;
     }
 
-    private CtClass[] toParam(List<Class<?>> paramType) {
+    private CtClass[] toParam(Class<?>[] paramType) {
         if (null == paramType) {
             return EMPTY_PARAM;
         }
-        int size = paramType.size();
+        int size = paramType.length;
         if (size == 0) {
             return EMPTY_PARAM;
         }
 
         CtClass[] parameterTypes = new CtClass[size];
         for (int i = 0; i < size; i++) {
-            Class<?> param = paramType.get(i);
+            Class<?> param = paramType[i];
             parameterTypes[i] = toClass(param);
         }
         return parameterTypes;
@@ -355,7 +371,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
     }
 
     @Override
-    public Enhance<T> beforeMethod(String name, List<Class<?>> paramType, BodyStatement statements) {
+    public Enhance<T> beforeMethod(String name, Class<?>[] paramType, BodyStatement statements) {
         if (null == statements) {
             return this;
         }
@@ -374,12 +390,12 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
     }
 
     @Override
-    public Enhance<T> afterMethod(String name, List<Class<?>> paramType, BodyStatement statements) {
+    public Enhance<T> afterMethod(String name, Class<?>[] paramType, BodyStatement statements) {
         return afterMethod(name, paramType, statements, false);
     }
 
     @Override
-    public Enhance<T> afterMethod(String name, List<Class<?>> paramType, BodyStatement statements, boolean asFinally) {
+    public Enhance<T> afterMethod(String name, Class<?>[] paramType, BodyStatement statements, boolean asFinally) {
         if (null == statements) {
             return this;
         }

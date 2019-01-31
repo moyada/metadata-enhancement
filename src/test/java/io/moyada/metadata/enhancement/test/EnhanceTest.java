@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
 
 /**
  * @author xueyikang
@@ -41,7 +40,7 @@ public class EnhanceTest {
     @DisplayName("增加方法注解")
     public void methodAnnotationTest() throws NoSuchMethodException {
         Class<Target> target = EnhanceFactory.copy(Target.class)
-                .addAnnotationToMethod("apply", Collections.<Class<?>>singletonList(String.class),
+                .addAnnotationToMethod("apply", new Class<?>[] {String.class},
                         Annotation.of(Proxy.class))
                 .create(Target.class.getName() + "methodAnnotationTest");
 
@@ -114,7 +113,7 @@ public class EnhanceTest {
     @DisplayName("增加方法")
     public void methodTest() {
         Class<Target> target = EnhanceFactory.copy(Target.class)
-                .addMethod("set", Collections.<Class<?>>singletonList(String.class), null, null,
+                .addMethod("set", new Class<?>[]{String.class}, null, null,
                         Modifier.PUBLIC, null,
                         Annotation.of(Proxy.class))
                 .addMethod("get", null, String.class, null,
@@ -145,7 +144,7 @@ public class EnhanceTest {
     public void proxyMethodTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         Class<Target> target = EnhanceFactory.extend(Target.class)
                 .addImport(Invocation.class.getName())
-                .beforeMethod("apply", Collections.<Class<?>>singletonList(String.class),
+                .beforeMethod("apply", new Class<?>[]{String.class},
                         BodyStatement.init()
                                 .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of("this.name"), IdentStatement.of("null")),
                                         BodyStatement.init()
@@ -167,5 +166,31 @@ public class EnhanceTest {
 
         Assertions.assertEquals(new Target().apply("test"), "test");
         Assertions.assertNotEquals(instance.apply("test"), "test");
+    }
+
+    @Test
+    @DisplayName("增强方法")
+    public void proxySuperMethodTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        Class<Target> target = EnhanceFactory.extend(Target.class)
+                .addImport(Invocation.class.getName())
+                .beforeMethod("say", new Class<?>[]{String.class},
+                        BodyStatement.init()
+                                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(1), IdentStatement.of("null")),
+                                        BodyStatement.init()
+                                                .addStatement(new VariableStatement(Invocation.class, "var1", Value.newObject(Invocation.class)))
+                                                .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "addArgs", Value.of("name"), Value.of(IdentStatement.of("name"))))
+                                                .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "addArgs", Value.of("info"), Value.of(IdentStatement.of(1))))
+                                                .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "addArgs", Value.of("status"), Value.of("success")))
+                                                .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "getData").assign(IdentStatement.of(1)))
+                                        )
+                                )
+                )
+                .create();
+
+        Method say = target.getDeclaredMethod("say", String.class);
+        say.setAccessible(true);
+
+        Target instance = target.getDeclaredConstructor().newInstance();
+        say.invoke(instance, "haha");
     }
 }

@@ -17,6 +17,9 @@ public class IdentStatement implements Statement {
     }
 
     public static IdentStatement of(int index) {
+        if (index < 1) {
+            throw new IllegalArgumentException("IdentStatement index must be positive.");
+        }
         return new IdentStatement("$" + index);
     }
 
