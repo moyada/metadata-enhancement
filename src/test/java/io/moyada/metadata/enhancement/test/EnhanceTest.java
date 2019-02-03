@@ -3,6 +3,7 @@ package io.moyada.metadata.enhancement.test;
 import io.moyada.metadata.enhancement.EnhanceFactory;
 import io.moyada.metadata.enhancement.statement.*;
 import io.moyada.metadata.enhancement.support.Annotation;
+import io.moyada.metadata.enhancement.support.Parameter;
 import io.moyada.metadata.enhancement.support.Value;
 import io.moyada.metadata.enhancement.test.domain.*;
 import org.junit.jupiter.api.*;
@@ -40,7 +41,7 @@ public class EnhanceTest {
     @DisplayName("增加方法注解")
     public void methodAnnotationTest() throws NoSuchMethodException {
         Class<Target> target = EnhanceFactory.copy(Target.class)
-                .addAnnotationToMethod("apply", new Class<?>[] {String.class},
+                .addAnnotationToMethod("apply", Parameter.of(String.class),
                         Annotation.of(Proxy.class))
                 .create(Target.class.getName() + "methodAnnotationTest");
 
@@ -113,7 +114,7 @@ public class EnhanceTest {
     @DisplayName("增加方法")
     public void methodTest() {
         Class<Target> target = EnhanceFactory.copy(Target.class)
-                .addMethod("set", new Class<?>[]{String.class}, null, null,
+                .addMethod("set", Parameter.of(String.class), null, null,
                         Modifier.PUBLIC, null,
                         Annotation.of(Proxy.class))
                 .addMethod("get", null, String.class, null,
@@ -144,7 +145,7 @@ public class EnhanceTest {
     public void proxyMethodTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         Class<Target> target = EnhanceFactory.extend(Target.class)
                 .addImport(Invocation.class.getName())
-                .beforeMethod("apply", new Class<?>[]{String.class},
+                .beforeMethod("apply", Parameter.of(String.class),
                         BodyStatement.init()
                                 .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of("this.name"), IdentStatement.of("null")),
                                         BodyStatement.init()
@@ -171,9 +172,9 @@ public class EnhanceTest {
     @Test
     @DisplayName("增强方法")
     public void proxySuperMethodTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        Class<Target> target = EnhanceFactory.extend(Target.class)
+        Class<Target> target = EnhanceFactory.copy(Target.class)
                 .addImport(Invocation.class.getName())
-                .beforeMethod("say", new Class<?>[]{String.class},
+                .beforeMethod("say", Parameter.of(String.class),
                         BodyStatement.init()
                                 .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(1), IdentStatement.of("null")),
                                         BodyStatement.init()
@@ -190,7 +191,7 @@ public class EnhanceTest {
         Method say = target.getDeclaredMethod("say", String.class);
         say.setAccessible(true);
 
-        Target instance = target.getDeclaredConstructor().newInstance();
+        Object instance = target.getDeclaredConstructor().newInstance();
         say.invoke(instance, "haha");
     }
 }

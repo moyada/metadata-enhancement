@@ -204,7 +204,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
         return this;
     }
 
-    private CtMethod superMethod(CtMethod originMethod, CtClass targetClass) throws NotFoundException, CannotCompileException {
+    private CtMethod createSuperMethod(CtMethod originMethod, CtClass targetClass) throws NotFoundException, CannotCompileException {
         int modifiers = originMethod.getModifiers();
         String methodName = originMethod.getName();
         CtClass[] parameterTypes = originMethod.getParameterTypes();
@@ -250,34 +250,41 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
 
     private CtMethod getMethod(String name, CtClass[] paramClass) {
         CtMethod method = null;
+        try {
+            method = targetClass.getDeclaredMethod(name, paramClass);
+        } catch (NotFoundException e) {
+            // pass
+        }
 
-        CtClass currentClass = this.targetClass;
+        if (method != null) {
+            ClassUtil.checkMethod(targetClass, method);
+            return method;
+        }
+
+        CtClass currentClass;
 
         do {
             try {
+                currentClass = targetClass.getSuperclass();
+            } catch (NotFoundException e) {
+                throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName(), e);
+            }
+
+            if ("java.lang.Object".equals(currentClass.getName())) {
+                throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName());
+            }
+
+            try {
                 method = currentClass.getDeclaredMethod(name, paramClass);
             } catch (NotFoundException e) {
-                try {
-                    currentClass = currentClass.getSuperclass();
-                } catch (NotFoundException e2) {
-                    throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName(), e2);
-                }
-                if ("java.lang.Object".equals(currentClass.getName())) {
-                    throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName());
-                }
+                throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName(), e);
             }
         } while (method == null);
 
-        int modifiers = method.getModifiers();
-        if (java.lang.reflect.Modifier.isStatic(modifiers)) {
-            throw new EnhanceException("Can not enhance static method [" + name + "] of super class " + currentClass.getName());
-        }
-        if (java.lang.reflect.Modifier.isPrivate(modifiers)) {
-            throw new EnhanceException("Can not enhance private method [" + name + "] of super class " + currentClass.getName());
-        }
+        ClassUtil.checkMethod(currentClass, method);
 
         try {
-            method = superMethod(method, this.targetClass);
+            method = createSuperMethod(method, this.targetClass);
             this.targetClass.addMethod(method);
         } catch (CannotCompileException | NotFoundException e) {
             throw new EnhanceException("Enhance method [" + name + "] error.", e);

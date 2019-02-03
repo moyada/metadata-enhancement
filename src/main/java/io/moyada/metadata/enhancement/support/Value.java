@@ -16,6 +16,22 @@ public class Value {
         this.statement = statement;
     }
 
+    public static Value of(Object value) {
+        String name = value.getClass().getName();
+        switch (name) {
+            case "java.lang.Byte" : return of((byte) value);
+            case "java.lang.Short" : return of((short) value);
+            case "java.lang.Integer" : return of((int) value);
+            case "java.lang.Long" : return of((long) value);
+            case "java.lang.Float" : return of((float) value);
+            case "java.lang.Double" : return of((double) value);
+            case "java.lang.Boolean" : return of((boolean) value);
+            case "java.lang.Character" : return of((char) value);
+            case "java.lang.String" : return of((String) value);
+            default: throw new IllegalArgumentException(name + " not found.");
+        }
+    }
+
     public static Value of(byte value) {
         return new Value(Byte.toString(value));
     }

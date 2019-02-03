@@ -6,9 +6,11 @@ package io.moyada.metadata.enhancement.statement;
  **/
 public class IdentStatement implements Statement {
 
+    public static final IdentStatement NULL = new IdentStatement("null");
+
     private final String identify;
 
-    public IdentStatement(String name) {
+    IdentStatement(String name) {
         identify = name;
     }
 
