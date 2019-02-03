@@ -1,4 +1,4 @@
-基于 `javassist` 封装的对原始类进行元数据增强的工具
+基于 `javassist` 封装的类元数据增强的工具
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.moyada/metadata-enhancement/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.moyada/metadata-enhancement)
 
@@ -16,7 +16,7 @@ Class<Target> target = EnhanceFactory.extend(Target.class)
                         // 扩展代码
                         BodyStatement.init()
                                 // 条件判断
-                                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(fileName), IdentStatement.of("null")),
+                                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(fileName), IdentStatement.NULL),
                                         BodyStatement.init()
                                                 .addStatement(new VariableStatement(Invocation.class, "var1", Value.newObject(Invocation.class)))
                                                 .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "addArgs", Value.of("info"), Value.of(IdentStatement.of(1))))
