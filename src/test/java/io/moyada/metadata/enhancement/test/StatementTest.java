@@ -128,7 +128,7 @@ public class StatementTest {
     @DisplayName("代码块语句")
     public void bodyTest() {
         BodyStatement bodyStatement = BodyStatement.init()
-                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of("_monitor"), IdentStatement.of("null")),
+                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of("_monitor"), IdentStatement.NULL),
                         BodyStatement.init()
                                 .addStatement(new VariableStatement(Invocation.class, "var1", Value.newObject(Invocation.class)))
                                 .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "addArgs", Value.of("info"), Value.of("test")))

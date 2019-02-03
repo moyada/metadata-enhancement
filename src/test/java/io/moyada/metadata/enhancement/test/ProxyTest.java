@@ -29,7 +29,7 @@ public class ProxyTest {
 
     @Test
     @DisplayName("方法代理")
-    public void proxyTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+    public void proxyTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         String fileName = "_monitor";
 
         Class<Target> target = EnhanceFactory.extend(Target.class)
@@ -38,7 +38,7 @@ public class ProxyTest {
                 .addField(fileName, Monitor.class, Modifier.PRIVATE, Annotation.of(Resource.class))
                 .beforeMethod("apply", Parameter.of(String.class),
                         BodyStatement.init()
-                                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(fileName), IdentStatement.of("null")),
+                                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(fileName), IdentStatement.NULL),
                                         BodyStatement.init()
                                                 .addStatement(new VariableStatement(Invocation.class, "var1", Value.newObject(Invocation.class)))
                                                 .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "addArgs", Value.of("info"), Value.of(IdentStatement.of(1))))

@@ -176,7 +176,7 @@ public class EnhanceTest {
                 .addImport(Invocation.class.getName())
                 .beforeMethod("say", Parameter.of(String.class),
                         BodyStatement.init()
-                                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(1), IdentStatement.of("null")),
+                                .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(1), IdentStatement.NULL),
                                         BodyStatement.init()
                                                 .addStatement(new VariableStatement(Invocation.class, "var1", Value.newObject(Invocation.class)))
                                                 .addStatement(InvokeStatement.of(IdentStatement.of("var1"), "addArgs", Value.of("name"), Value.of(IdentStatement.of("name"))))
