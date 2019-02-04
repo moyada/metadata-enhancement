@@ -27,8 +27,6 @@ public interface Enhance<T> {
 
     Enhance<T> afterMethod(String name, Class<?>[] paramType, BodyStatement statements);
 
-    Enhance<T> afterMethod(String name, Class<?>[] paramType, BodyStatement statements, boolean asFinally);
-
     Enhance<T> addAnnotationToClass(Annotation... annotations);
 
     Enhance<T> addAnnotationToField(String name, Annotation... annotations);

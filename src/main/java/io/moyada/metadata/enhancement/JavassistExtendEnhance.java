@@ -7,12 +7,12 @@ import javassist.bytecode.AttributeInfo;
 /**
  * javassist 继承代理
  * @author xueyikang
- * @since 0.0.1
+ * @since 1.0
  **/
 class JavassistExtendEnhance<T> extends JavassistEnhance<T> {
 
     JavassistExtendEnhance(Class<T> target) {
-        super(target);
+        super(target, false);
     }
 
     @Override
@@ -20,8 +20,7 @@ class JavassistExtendEnhance<T> extends JavassistEnhance<T> {
         ClassPool classPool = ClassPool.getDefault();
 
         // 继承方式
-        CtClass ctClass = classPool.makeClass(NameUtil.getProxyName(target.getName()));
-        ctClass.setSuperclass(originClass);
+        CtClass ctClass = classPool.makeClass(NameUtil.getProxyName(target.getName()), originClass);
 
         // 注解
         for (AttributeInfo attribute : originClass.getClassFile().getAttributes()) {

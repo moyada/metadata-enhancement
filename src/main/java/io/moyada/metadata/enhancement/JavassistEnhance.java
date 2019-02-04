@@ -18,18 +18,20 @@ import java.util.*;
 /**
  * javassist 代理
  * @author xueyikang
- * @since 0.0.1
+ * @since 1.0
  **/
 public abstract class JavassistEnhance<T> implements Enhance<T> {
 
     private static final CtClass[] EMPTY_PARAM = new CtClass[0];
+
+    private final boolean isOriginName;
 
     CtClass originClass;
     CtClass targetClass;
 
     private final Set<String> importPackage;
 
-    JavassistEnhance(Class<T> targetClass) {
+    JavassistEnhance(Class<T> targetClass, boolean isOriginName) {
         try {
             this.originClass = getOrigin(targetClass);
             this.targetClass = buildTarget(targetClass);
@@ -39,6 +41,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
             throw new EnhanceException("Can not fetch target class: " + originClass.getName(), e);
         }
 
+        this.isOriginName = isOriginName;
         this.importPackage = new HashSet<>();
 
         Iterator<String> importedPackages = this.targetClass.getClassPool().getImportedPackages();
@@ -249,11 +252,15 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
     }
 
     private CtMethod getMethod(String name, CtClass[] paramClass) {
-        CtMethod method = null;
+        if ("java.lang.Object".equals(originClass.getName())) {
+            throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName());
+        }
+
+        CtMethod method;
         try {
             method = targetClass.getDeclaredMethod(name, paramClass);
         } catch (NotFoundException e) {
-            // pass
+            method = null;
         }
 
         if (method != null) {
@@ -261,11 +268,11 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
             return method;
         }
 
-        CtClass currentClass;
+        CtClass currentClass = targetClass;
 
         do {
             try {
-                currentClass = targetClass.getSuperclass();
+                currentClass = currentClass.getSuperclass();
             } catch (NotFoundException e) {
                 throw new EnhanceException("Can not found method [" + name + "] in " + targetClass.getName(), e);
             }
@@ -398,11 +405,6 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
 
     @Override
     public Enhance<T> afterMethod(String name, Class<?>[] paramType, BodyStatement statements) {
-        return afterMethod(name, paramType, statements, false);
-    }
-
-    @Override
-    public Enhance<T> afterMethod(String name, Class<?>[] paramType, BodyStatement statements, boolean asFinally) {
         if (null == statements) {
             return this;
         }
@@ -413,7 +415,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
 
         CtMethod method = getMethod(name, paramType);
         try {
-            method.insertAfter(content, asFinally);
+            method.insertAfter(content, true);
         } catch (CannotCompileException e) {
             throw new EnhanceException(e);
         }
@@ -428,14 +430,20 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
     @Override
     @SuppressWarnings("unchecked")
     public Class<T> create(String name) {
-        if (null == name) {
-            targetClass.setName(NameUtil.getProxyName(originClass.getName()));
-        } else {
-            targetClass.setName(name);
+        if (null == name && isOriginName) {
+            name = NameUtil.getProxyName(originClass.getName());
         }
 
-        if (originClass.getName().equals(targetClass.getName())) {
-            throw new EnhanceException("duplicate definition class name");
+        if (null != name) {
+            if (originClass.getName().equals(name)) {
+                throw new EnhanceException(name + ": have same name class");
+            }
+
+            try {
+                targetClass.setName(name);
+            } catch (RuntimeException e) {
+                throw new EnhanceException(name + ": have same name class", e);
+            }
         }
 
         Class<T> newClass;
@@ -445,7 +453,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
             throw new EnhanceException("create proxy error from " + originClass.getName(), e);
         }
 
-        if (ClassUtil.isPrint()) {
+        if (ClassUtil.isWrite()) {
             ClassUtil.writeFile(targetClass);
         }
         return newClass;

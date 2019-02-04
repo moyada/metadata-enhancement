@@ -6,12 +6,12 @@ import javassist.CtClass;
 /**
  * javassist 镜像代理
  * @author xueyikang
- * @since 0.0.1
+ * @since 1.0
  **/
 class JavassistCopyEnhance<T> extends JavassistEnhance<T> {
 
     JavassistCopyEnhance(Class<T> targetClass) {
-        super(targetClass);
+        super(targetClass, true);
     }
 
     @Override

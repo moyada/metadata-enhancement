@@ -6,7 +6,7 @@
 
     <groupId>io.github.moyada</groupId>
     <artifactId>metadata-enhancement</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
 
     <name>metadata-enhancement</name>
     <description>A tool for enhance class data.</description>
@@ -42,7 +42,7 @@
         <maven.source.version>3.0.1</maven.source.version>
         <maven.javadoc.version>3.0.1</maven.javadoc.version>
         <maven.gpg.version>1.6</maven.gpg.version>
-        <gpg.skip>false</gpg.skip>
+        <gpg.skip>true</gpg.skip>
     </properties>
 
     <dependencies>

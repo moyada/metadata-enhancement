@@ -14,19 +14,19 @@ import java.net.URL;
  **/
 public class ClassUtil {
 
-    private static final boolean isPrint;
+    private static final boolean isWrite;
 
     static {
-        String property = System.getProperty("print.result");
+        String property = System.getProperty("write.class");
         if (property == null) {
-            isPrint = false;
+            isWrite = false;
         } else {
-            isPrint = Boolean.TRUE.toString().equalsIgnoreCase(property);
+            isWrite = Boolean.TRUE.toString().equalsIgnoreCase(property);
         }
     }
 
-    public static boolean isPrint() {
-        return isPrint;
+    public static boolean isWrite() {
+        return isWrite;
     }
 
     public static void checkMethod(CtClass ctClass, CtMethod method) {

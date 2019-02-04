@@ -23,7 +23,17 @@ public class EnhanceTest {
 
     @BeforeAll
     public static void setPrint() {
-        System.setProperty("print.result", "true");
+        System.setProperty("write.output", "true");
+    }
+
+    @Test
+    @DisplayName("增加类注解")
+    public void classTest() {
+        Class<Target> target = EnhanceFactory.extend(Target.class).create();
+        target = EnhanceFactory.extend(Target.class).create(Target.class.getName() + "0");
+        target = EnhanceFactory.copy(Target.class).create();
+        target = EnhanceFactory.copy(Target.class).create(Target.class.getName() + "1");
+        target = EnhanceFactory.extend(Target.class).create();
     }
 
     @Test
@@ -94,7 +104,7 @@ public class EnhanceTest {
         Class<Target> target = EnhanceFactory.copy(Target.class)
                 .addField("value", String.class, Modifier.PUBLIC,
                         Annotation.of(Resource.class).set("name", "target"))
-                .create(Target.class.getName() + "annotationFieldTest");
+                .create();
 
         Field monitor;
         Resource annotation;
@@ -122,7 +132,7 @@ public class EnhanceTest {
                         BodyStatement.init()
                                 .addStatement(new ReturnStatement(Value.of(IdentStatement.of("this.name"))))
                 )
-                .create(Target.class.getName() + "methodTest");
+                .create();
 
         Method set, get;
         try {

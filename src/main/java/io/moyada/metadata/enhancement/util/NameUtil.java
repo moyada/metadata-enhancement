@@ -8,13 +8,15 @@ import io.moyada.metadata.enhancement.support.Assert;
  **/
 public class NameUtil {
 
+    private static int index = 0;
+
     public static String getProxyName(String className) {
         int index = className.lastIndexOf('.');
         String simpleName = -1 == index ? className : className.substring(index + 1);
         if (!simpleName.contains("$")) {
-            return className + "$_Proxy";
+            return className + "$Proxy" + NameUtil.index++;
         }
-        return className + "_Proxy";
+        return className + "_Proxy" + NameUtil.index++;
     }
 
     public static void check(String name) {

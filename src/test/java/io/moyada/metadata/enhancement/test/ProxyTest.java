@@ -24,7 +24,7 @@ public class ProxyTest {
 
     @BeforeAll
     public static void setPrint() {
-        System.setProperty("print.result", "true");
+        System.setProperty("write.class", "true");
     }
 
     @Test

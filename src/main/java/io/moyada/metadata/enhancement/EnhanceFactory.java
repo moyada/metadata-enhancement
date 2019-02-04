@@ -3,6 +3,7 @@ package io.moyada.metadata.enhancement;
 /**
  * @author xueyikang
  * @since 1.0
+ * not thread safe
  **/
 public final class EnhanceFactory {
 
