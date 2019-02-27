@@ -9,6 +9,18 @@ import java.util.List;
  **/
 public class BodyStatement implements Statement {
 
+    public static final BodyStatement EMPTY = new BodyStatement() {
+        @Override
+        public BodyStatement addStatement(Statement statement) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getContent() {
+            return "";
+        }
+    };
+
     private List<Statement> statementList;
 
     BodyStatement() {

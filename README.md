@@ -12,7 +12,7 @@ Class<Target> target = EnhanceFactory.extend(Target.class)
                 // 增加字段与注解
                 .addField(fileName, Monitor.class, Modifier.PRIVATE, Annotation.of(Resource.class))
                 // 增强方法
-                .beforeMethod("apply", Parameter.of(String.class),
+                .beforeMethod("apply", Types.of(String.class),
                         // 扩展代码
                         BodyStatement.init()
                                 // 条件判断

@@ -19,7 +19,7 @@ public class IfStatement implements Statement {
 
     private IfStatement(ConditionStatement ifState, BodyStatement ifBody) {
         this.ifState = ifState;
-        this.ifBody = null == ifBody ? EmptyStatement.INSTANCE : ifBody;
+        this.ifBody = null == ifBody ? BodyStatement.EMPTY : ifBody;
     }
 
     public static IfStatement If(ConditionStatement condition, BodyStatement body) {
@@ -37,7 +37,7 @@ public class IfStatement implements Statement {
     }
 
     public Statement Else(BodyStatement body) {
-        this.elseBody = null == body ? EmptyStatement.INSTANCE : body;
+        this.elseBody = null == body ? BodyStatement.EMPTY : body;
         return this;
     }
 

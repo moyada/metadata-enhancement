@@ -2,7 +2,6 @@ package io.moyada.metadata.enhancement;
 
 import io.moyada.metadata.enhancement.exception.EnhanceException;
 import io.moyada.metadata.enhancement.statement.BodyStatement;
-import io.moyada.metadata.enhancement.statement.EmptyStatement;
 import io.moyada.metadata.enhancement.support.Annotation;
 import io.moyada.metadata.enhancement.support.Assert;
 import io.moyada.metadata.enhancement.support.Value;
@@ -13,7 +12,10 @@ import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.MemberValue;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * javassist 代理
@@ -183,7 +185,7 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
             returnType = void.class;
         }
         if (null == body) {
-            body = EmptyStatement.INSTANCE;
+            body = BodyStatement.EMPTY;
         }
 
         CtClass returnClass = toClass(returnType);

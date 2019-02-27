@@ -18,7 +18,7 @@ public class ForLoopStatement implements Statement {
         this.init = init;
         this.condition = condition;
         this.step = step;
-        this.body = null == body ? EmptyStatement.INSTANCE : body;
+        this.body = null == body ? BodyStatement.EMPTY : body;
     }
 
     @Override

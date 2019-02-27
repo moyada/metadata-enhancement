@@ -3,7 +3,7 @@ package io.moyada.metadata.enhancement.test;
 import io.moyada.metadata.enhancement.EnhanceFactory;
 import io.moyada.metadata.enhancement.statement.*;
 import io.moyada.metadata.enhancement.support.Annotation;
-import io.moyada.metadata.enhancement.support.Parameter;
+import io.moyada.metadata.enhancement.support.Types;
 import io.moyada.metadata.enhancement.support.Value;
 import io.moyada.metadata.enhancement.test.domain.Invocation;
 import io.moyada.metadata.enhancement.test.domain.Monitor;
@@ -36,7 +36,7 @@ public class ProxyTest {
                 .addImport(Invocation.class.getName())
                 .addAnnotationToClass(Annotation.of(Resource.class))
                 .addField(fileName, Monitor.class, Modifier.PRIVATE, Annotation.of(Resource.class))
-                .beforeMethod("apply", Parameter.of(String.class),
+                .beforeMethod("apply", Types.of(String.class),
                         BodyStatement.init()
                                 .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(fileName), IdentStatement.NULL),
                                         BodyStatement.init()

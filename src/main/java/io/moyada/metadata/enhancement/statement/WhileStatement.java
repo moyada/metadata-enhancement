@@ -14,7 +14,7 @@ public class WhileStatement implements Statement {
     public WhileStatement(ConditionStatement condition, BodyStatement body) {
         Assert.checkNotNull(condition, "condition");
         this.condition = condition;
-        this.body = null == body ? EmptyStatement.INSTANCE : body;
+        this.body = null == body ? BodyStatement.EMPTY : body;
     }
 
     @Override
