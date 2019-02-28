@@ -154,7 +154,7 @@ public class EnhanceTest {
     @DisplayName("增强方法")
     public void proxyMethodTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         Class<Target> target = EnhanceFactory.extend(Target.class)
-                .addImport(Invocation.class.getName())
+                .addImport(Invocation.class)
                 .beforeMethod("apply", Types.of(String.class),
                         BodyStatement.init()
                                 .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of("this.name"), IdentStatement.of("null")),
@@ -183,7 +183,7 @@ public class EnhanceTest {
     @DisplayName("增强方法")
     public void proxySuperMethodTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         Class<Target> target = EnhanceFactory.copy(Target.class)
-                .addImport(Invocation.class.getName())
+                .addImport(Invocation.class)
                 .beforeMethod("say", Types.of(String.class),
                         BodyStatement.init()
                                 .addStatement(IfStatement.If(new ConditionStatement(ConditionType.NE, IdentStatement.of(1), IdentStatement.NULL),

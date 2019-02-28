@@ -64,6 +64,11 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
     abstract CtClass buildTarget(Class<T> target) throws NotFoundException, CannotCompileException;
 
     @Override
+    public Enhance<T> addImport(Class<?> clazz) {
+        return addImport(clazz.getName());
+    }
+
+    @Override
     public Enhance<T> addImport(String name) {
         Assert.checkNotNull(name, "class name");
         addPackage(name);

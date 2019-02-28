@@ -33,7 +33,7 @@ public class ProxyTest {
         String fileName = "_monitor";
 
         Class<Target> target = EnhanceFactory.extend(Target.class)
-                .addImport(Invocation.class.getName())
+                .addImport(Invocation.class)
                 .addAnnotationToClass(Annotation.of(Resource.class))
                 .addField(fileName, Monitor.class, Modifier.PRIVATE, Annotation.of(Resource.class))
                 .beforeMethod("apply", Types.of(String.class),
