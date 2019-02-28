@@ -3,13 +3,16 @@ package io.moyada.metadata.enhancement.support;
 import io.moyada.metadata.enhancement.statement.IdentStatement;
 
 /**
+ * 值引用
  * @author xueyikang
  * @since 1.0
  **/
 public class Value {
 
+    // 值语句
     private String statement;
 
+    // 引入类型
     private Class<?> type;
 
     public Value(String statement) {
@@ -68,16 +71,32 @@ public class Value {
         return new Value("\"" + value + "\"");
     }
 
+    /**
+     * 语句块
+     * @param ident
+     * @return
+     */
     public static Value of(IdentStatement ident) {
         return new Value(ident.getIdentify());
     }
 
+    /**
+     * 类型
+     * @param type
+     * @return
+     */
     public static Value of(Class<?> type) {
         Value statement = new Value(type.getSimpleName() + ".class");
         statement.type = type;
         return statement;
     }
 
+    /**
+     * 类型构造函数
+     * @param type
+     * @param params
+     * @return
+     */
     public static Value newObject(Class<?> type, Object... params) {
         StringBuilder builder = new StringBuilder("new ").append(type.getSimpleName());
         buildParam(builder, params);
@@ -87,6 +106,13 @@ public class Value {
         return statement;
     }
 
+    /**
+     * 静态方法构造
+     * @param type
+     * @param methodName
+     * @param params
+     * @return
+     */
     public static Value staticMethod(Class<?> type, String methodName, Object... params) {
         StringBuilder builder = new StringBuilder(type.getSimpleName()).append(".").append(methodName);
         buildParam(builder, params);
@@ -96,6 +122,11 @@ public class Value {
         return statement;
     }
 
+    /**
+     * 创建参数列表
+     * @param builder
+     * @param values
+     */
     private static void buildParam(StringBuilder builder, Object[] values) {
         builder.append("(");
         if (values.length != 0) {
@@ -128,12 +159,23 @@ public class Value {
         }
     }
 
+    /**
+     * 静态公开属性引用
+     * @param type
+     * @param fieldName
+     * @return
+     */
     public static Value ref(Class<?> type, String fieldName) {
         Value statement = new Value(type.getSimpleName() + "." + fieldName);
         statement.type = type;
         return statement;
     }
 
+    /**
+     * 枚举引用
+     * @param type
+     * @return
+     */
     public static Value ref(Enum<?> type) {
         return ref(type.getClass(), type.name());
     }

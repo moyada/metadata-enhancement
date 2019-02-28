@@ -6,7 +6,16 @@ package io.moyada.metadata.enhancement.util;
  **/
 public class ModifierUtil {
 
+    /**
+     * 获取展示标识
+     * @param flag 权限
+     * @return
+     */
     public static String valueOf(int flag) {
+        if (flag < 0) {
+            throw new IllegalArgumentException("flag must be positive, promote use Modifier.PUBLIC");
+        }
+
         String str;
         if (java.lang.reflect.Modifier.isPrivate(flag)) {
             str = "private ";

@@ -154,12 +154,14 @@ public abstract class JavassistEnhance<T> implements Enhance<T> {
         statement.append(name);
 
         if (null != init) {
+            statement.append(" = ");
+            statement.append(init.getStatement());
+
+            // 增加引用
             Class<?> type = init.getType();
             if (null != type) {
                 addPackage(type.getName());
             }
-            statement.append(" = ");
-            statement.append(init.getStatement());
         }
 
         return statement.append(";").toString();

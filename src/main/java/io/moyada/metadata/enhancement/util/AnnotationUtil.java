@@ -15,6 +15,11 @@ import java.util.Map;
  **/
 public class AnnotationUtil {
 
+    /**
+     * 获取参数列表
+     * @param type
+     * @return
+     */
     public static Map<String, Class<?>> getMemberType(Class<? extends Annotation> type) {
         Method[] methods = type.getDeclaredMethods();
         if (null == methods || methods.length == 0) {
@@ -28,6 +33,13 @@ public class AnnotationUtil {
         return properties;
     }
 
+    /**
+     * 获取注解参数值
+     * @param valueType
+     * @param value
+     * @param cpool
+     * @return
+     */
     public static MemberValue getMemberValue(Class<?> valueType, Object value, ConstPool cpool) {
         MemberValue memberValue;
         switch (valueType.getName()) {
@@ -72,6 +84,13 @@ public class AnnotationUtil {
         return memberValue;
     }
 
+    /**
+     * 获取注解数组参数值
+     * @param valueType
+     * @param value
+     * @param cpool
+     * @return
+     */
     private static ArrayMemberValue getArrayMember(Class<?> valueType, Object value, ConstPool cpool) {
         ArrayMemberValue memberValue = new ArrayMemberValue(cpool);
 

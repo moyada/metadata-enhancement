@@ -3,12 +3,16 @@ package io.moyada.metadata.enhancement.statement;
 import io.moyada.metadata.enhancement.support.Assert;
 
 /**
+ * 循环语句
  * @author xueyikang
  * @since 1.0
  **/
 public class WhileStatement implements Statement {
 
+    // 条件
     private ConditionStatement condition;
+
+    // 内容
     private BodyStatement body;
 
     public WhileStatement(ConditionStatement condition, BodyStatement body) {
@@ -19,8 +23,8 @@ public class WhileStatement implements Statement {
 
     @Override
     public String getContent() {
-        StringBuilder content = new StringBuilder("while (").append(condition.getContent()).append(") ");
-        content.append("{\n").append(body.getContent()).append("\n}\n");
-        return content.toString();
+        String content = "while (" + condition.getContent() + ") " +
+                "{\n" + body.getContent() + "\n}\n";
+        return content;
     }
 }

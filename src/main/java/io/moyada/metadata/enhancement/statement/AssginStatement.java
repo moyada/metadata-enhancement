@@ -1,13 +1,16 @@
 package io.moyada.metadata.enhancement.statement;
 
 /**
+ * 赋值语句
  * @author xueyikang
  * @since 1.0
  **/
 public abstract class AssginStatement implements Assign, Statement {
 
+    // 类型
     private Class<?> type;
 
+    // 名称
     private String name;
 
     @Override
@@ -38,6 +41,10 @@ public abstract class AssginStatement implements Assign, Statement {
         return IdentStatement.of(getInvoke());
     }
 
+    /**
+     * 调用语句
+     * @return
+     */
     protected abstract String getInvoke();
 
     @Override

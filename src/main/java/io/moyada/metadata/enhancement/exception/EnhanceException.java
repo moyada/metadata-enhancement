@@ -8,15 +8,15 @@ public class EnhanceException extends RuntimeException {
 
     static final long serialVersionUID = 1L;
 
-    public EnhanceException(String message) {
-        super(message);
+    public EnhanceException(String message, Throwable cause) {
+        super(message, cause, true, false);
     }
 
-    public EnhanceException(String message, Throwable cause) {
-        super(message, cause);
+    public EnhanceException(String message) {
+        this(message, null);
     }
 
     public EnhanceException(Throwable cause) {
-        super(cause);
+        this(cause.getMessage(), cause);
     }
 }

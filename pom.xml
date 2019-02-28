@@ -6,7 +6,7 @@
 
     <groupId>io.github.moyada</groupId>
     <artifactId>metadata-enhancement</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
 
     <name>metadata-enhancement</name>
     <description>A tool for enhance class data.</description>

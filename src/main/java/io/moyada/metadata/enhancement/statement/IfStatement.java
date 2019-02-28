@@ -6,15 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 判断语句
  * @author xueyikang
  * @since 1.0
  **/
 public class IfStatement implements Statement {
 
+    // 条件
     private ConditionStatement ifState;
+
+    // 通过内容
     private BodyStatement ifBody;
+
+    // 非法内容
     private BodyStatement elseBody;
 
+    // 中间条件
     private List<IfStatement> elseIf;
 
     private IfStatement(ConditionStatement ifState, BodyStatement ifBody) {
@@ -43,9 +50,10 @@ public class IfStatement implements Statement {
 
     @Override
     public String getContent() {
-        StringBuilder content = new StringBuilder("if (");
-        content.append(ifState.getContent()).append(") ");
-        content.append("{\n").append(ifBody.getContent()).append("\n}");
+        String body = ifBody.getContent();
+        StringBuilder content = new StringBuilder(null == elseBody ? 32 + body.length() : 128 + body.length());
+        content.append("if (").append(ifState.getContent()).append(") ");
+        content.append("{\n").append(body).append("\n}");
         if (null != elseIf) {
             for (IfStatement statement : elseIf) {
                 content.append(" else ").append(statement.getContent()).deleteCharAt(content.length() - 1);

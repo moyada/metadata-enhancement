@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 语句块
  * @author xueyikang
  * @since 1.0
  **/
@@ -30,6 +31,11 @@ public class BodyStatement implements Statement {
         return new BodyStatement();
     }
 
+    /**
+     * 增加语句
+     * @param statement
+     * @return
+     */
     public BodyStatement addStatement(Statement statement) {
         if (null == statementList) {
             this.statementList = new ArrayList<>();
@@ -43,7 +49,7 @@ public class BodyStatement implements Statement {
         if (null == statementList) {
             return "";
         }
-        StringBuilder str = new StringBuilder();
+        StringBuilder str = new StringBuilder(64 * statementList.size());
         for (Statement statement : statementList) {
             str.append(statement.getContent()).append("\n");
         }

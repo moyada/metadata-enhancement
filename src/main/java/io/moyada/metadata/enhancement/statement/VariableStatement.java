@@ -3,13 +3,16 @@ package io.moyada.metadata.enhancement.statement;
 import io.moyada.metadata.enhancement.support.Value;
 
 /**
+ * 属性值语句
  * @author xueyikang
  * @since 1.0
  **/
 public class VariableStatement extends IdentStatement implements Statement {
 
-    Class<?> type;
+    // 类型
+    protected Class<?> type;
 
+    // 初始值
     private Value init;
 
     public VariableStatement(Class<?> type, String name) {
